@@ -1,7 +1,14 @@
+# IntelliJ specific files
 .idea
 *.iml
+
+# Secret keys
 .env
+
+# MacOS Metadata files
 .DS_STORE
+
+# Build or distribution related files
 build
 dist
 out
