@@ -2,13 +2,14 @@ import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import task.FindPlayers;
 import task.Task;
+import ui.GUI;
 import util.Util;
 
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @ScriptManifest(author = "Aerodude",
@@ -18,6 +19,12 @@ import java.util.List;
 		version=1
 )
 public class AeroScout extends Script {
+
+	public static void main(String[] args) {
+		GUI gui = new GUI();
+		gui.open();
+	}
+
 	private static final List<Task> tasks = new ArrayList<>();
 	private static final GUI gui = new GUI();
 	private String status = "Initializing Script";
@@ -28,8 +35,8 @@ public class AeroScout extends Script {
 		startTime = System.currentTimeMillis();
 
 		// Add all our tasks to the task list
-		tasks.addAll(Arrays.asList(
-				new FindPlayers(this,"Locating Nearby Players...")
+		tasks.addAll(Collections.singletonList(
+			new FindPlayers(this, "Locating Nearby Players...", gui)
 		));
 
 		try {

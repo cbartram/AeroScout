@@ -12,6 +12,7 @@ import java.util.Map;
 public class PlayerDetails {
 
 	private String name;
+	private int world;
 	private int combatLevel;
 	private int skull;
 	private int attackLevel = -1;
@@ -19,6 +20,7 @@ public class PlayerDetails {
 	private int defenseLevel = -1;
 	private int rangedLevel = -1;
 	private int magicLevel = -1;
+	private int hitpointsLevel = -1;
 	private int prayerLevel = -1;
 	private Map<EquipmentSlot, String> equipment;
 
@@ -50,6 +52,10 @@ public class PlayerDetails {
 
 		if(stats.containsKey("Prayer")) {
 			details.setPrayerLevel(stats.get("Prayer").getLevel());
+		}
+
+		if(stats.containsKey("Hitpoints")) {
+			details.setAttackLevel(stats.get("Hitpoints").getLevel());
 		}
 		details.setEquipment(identifyEquipment(player));
 		return details;
