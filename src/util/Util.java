@@ -5,8 +5,11 @@ import org.osbot.rs07.api.ui.Skill;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Util {
 
-	private static final Map<String, Map<Skill, Stat>> playerStatsCache = new ConcurrentHashMap<>();
+	private static final Map<String, Map<String, Stat>> playerStatsCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Retrieves the current price of a Grand Exchange tradeable item given its ID.
@@ -55,19 +58,23 @@ public class Util {
 	}
 
 
-	public static Map<Skill, Stat> getStats(final String playerName) {
+	public static Map<String, Stat> getStats(final String playerName) {
 
 		if(playerStatsCache.containsKey(playerName)) {
 			return playerStatsCache.get(playerName);
 		}
 
-		final Map<Skill, Stat> stats = new HashMap<>(24);
+		final Map<String, Stat> stats = new HashMap<>(24);
 
 		try {
-			URL url = new URL("https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + playerName);
-			URLConnection con = url.openConnection();
+			URL url = new URL("https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + URLEncoder.encode(playerName, StandardCharsets.UTF_8.toString()));
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
 			con.setUseCaches(true);
+
+			if(con.getResponseCode() >= 400) {
+				return stats;
+			}
 
 			try(InputStreamReader inputStreamReader = new InputStreamReader(con.getInputStream());
 				BufferedReader br = new BufferedReader(inputStreamReader)) {
@@ -76,8 +83,7 @@ public class Util {
 
 				for (final Skill skill : Skill.values()) {
 					splitValues = br.readLine().split(",");
-					System.out.println(skill.toString());
-					stats.put(Skill.forName(skill.toString()), new Stat(Integer.parseInt(splitValues[0]), Integer.parseInt(splitValues[1]), Integer.parseInt(splitValues[2])));
+					stats.put(skill.toString(), new Stat(Integer.parseInt(splitValues[0]), Integer.parseInt(splitValues[1]), Integer.parseInt(splitValues[2])));
 				}
 			}
 

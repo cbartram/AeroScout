@@ -2,18 +2,20 @@ package task;
 
 import model.PlayerDetails;
 import model.Stat;
+import org.osbot.rs07.api.Players;
 import org.osbot.rs07.api.model.Player;
-import org.osbot.rs07.api.ui.Skill;
+import org.osbot.rs07.script.MethodProvider;
 import util.Util;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FindPlayers extends Task {
+	private final MethodProvider ctx;
 
-	public FindPlayers(final String status) {
+	public FindPlayers(final MethodProvider ctx, final String status) {
 		super(status);
+		this.ctx = ctx;
 	}
 
 	@Override
@@ -23,14 +25,23 @@ public class FindPlayers extends Task {
 
 	@Override
 	public void execute() {
-		List<Player> players = getPlayers().getAll().stream().filter(player -> !player.getName()
-				.equals(myPlayer().getName()))
-				.collect(Collectors.toList());
-		for(Player p : players) {
-			log("Found nearby player: " + p.getName());
-			Map<Skill, Stat> playerStats = Util.getStats(p.getName());
-			PlayerDetails details = PlayerDetails.of(playerStats, p);
-			log(details);
+		Players p = ctx.getPlayers();
+
+		if(p != null) {
+			List<Player> players = p.getAll();
+	//		.stream().filter(player -> player != null && !player.getName().equals(myPlayer().getName()))
+	//				.collect(Collectors.toList());
+			for(Player player : players) {
+				Map<String, Stat> playerStats = Util.getStats(player.getName());
+//				ctx.log("Found nearby player: " + player.getName() + " with stats: ");
+//				for(String key : playerStats.keySet()) {
+//					ctx.log(key + " - " + playerStats.get(key));
+//				}
+				PlayerDetails details = PlayerDetails.of(playerStats, player);
+				ctx.log(details);
+			}
+		} else {
+			setStatus("No players found.");
 		}
 	}
 }

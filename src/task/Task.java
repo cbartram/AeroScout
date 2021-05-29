@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.osbot.rs07.script.MethodProvider;
 
 /**
  * Abstract class which is used to execute various tasks the script must perform.
@@ -17,7 +16,7 @@ import org.osbot.rs07.script.MethodProvider;
  */
 
 @RequiredArgsConstructor
-public abstract class Task extends MethodProvider {
+public abstract class Task {
 
 	@Getter
 	@Setter

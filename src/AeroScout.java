@@ -29,7 +29,7 @@ public class AeroScout extends Script {
 
 		// Add all our tasks to the task list
 		tasks.addAll(Arrays.asList(
-				new FindPlayers("Locating Nearby Players...")
+				new FindPlayers(this,"Locating Nearby Players...")
 		));
 
 		try {
@@ -50,7 +50,7 @@ public class AeroScout extends Script {
 	}
 
 	@Override
-	public int onLoop() {
+	public int onLoop() throws InterruptedException {
 		try {
 			for (Task task : tasks) {
 				if (task.activate()) {
@@ -68,7 +68,7 @@ public class AeroScout extends Script {
 
 
 	@Override
-	public final void onExit() {
+	public final void onExit() throws InterruptedException {
 		if(gui.isOpen()) gui.close();
 		log("Closing Script...");
 	}

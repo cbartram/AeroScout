@@ -2,7 +2,6 @@ package model;
 
 import lombok.Data;
 import org.osbot.rs07.api.model.Player;
-import org.osbot.rs07.api.ui.Skill;
 
 import java.util.Map;
 
@@ -12,26 +11,45 @@ public class PlayerDetails {
 	private String name;
 	private int combatLevel;
 	private int skull;
-	private int attackLevel;
-	private int strengthLevel;
-	private int defenseLevel;
-	private int rangedLevel;
-	private int magicLevel;
-	private int prayerLevel;
+	private int attackLevel = -1;
+	private int strengthLevel = -1;
+	private int defenseLevel = -1;
+	private int rangedLevel = -1;
+	private int magicLevel = -1;
+	private int prayerLevel = -1;
 
 	// TODO gear
 
-	public static PlayerDetails of(Map<Skill, Stat> stats, Player player) {
+	public static PlayerDetails of(final Map<String, Stat> stats, final Player player) {
 		final PlayerDetails details = new PlayerDetails();
 		details.setName(player.getName());
 		details.setCombatLevel(player.getCombatLevel());
 		details.setSkull(player.getSkullIcon());
-		details.setAttackLevel(stats.get(Skill.ATTACK).getLevel());
-		details.setStrengthLevel(stats.get(Skill.STRENGTH).getLevel());
-		details.setDefenseLevel(stats.get(Skill.DEFENCE).getLevel());
-		details.setRangedLevel(stats.get(Skill.RANGED).getLevel());
-		details.setMagicLevel(stats.get(Skill.MAGIC).getLevel());
-		details.setPrayerLevel(stats.get(Skill.PRAYER).getLevel());
+
+		if(stats.containsKey("Attack")) {
+			details.setAttackLevel(stats.get("Attack").getLevel());
+		}
+
+		if(stats.containsKey("Strength")) {
+			details.setStrengthLevel(stats.get("Strength").getLevel());
+		}
+
+		if(stats.containsKey("Defence")) {
+			details.setDefenseLevel(stats.get("Defence").getLevel());
+		}
+
+		if(stats.containsKey("Ranged")) {
+			details.setRangedLevel(stats.get("Ranged").getLevel());
+		}
+
+		if(stats.containsKey("Magic")) {
+			details.setMagicLevel(stats.get("Magic").getLevel());
+		}
+
+		if(stats.containsKey("Prayer")) {
+			details.setPrayerLevel(stats.get("Prayer").getLevel());
+		}
+
 		return details;
 	}
 
