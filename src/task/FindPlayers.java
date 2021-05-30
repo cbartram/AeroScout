@@ -6,7 +6,6 @@ import org.osbot.rs07.api.Players;
 import org.osbot.rs07.api.model.Player;
 import org.osbot.rs07.script.MethodProvider;
 import service.DiscordService;
-import ui.GUI;
 import util.Sleep;
 import util.Util;
 
@@ -15,13 +14,11 @@ import java.util.Map;
 
 public class FindPlayers extends Task {
 	private final MethodProvider ctx;
-	private final GUI gui;
 	private final DiscordService discordService = new DiscordService();
 
-	public FindPlayers(final MethodProvider ctx, final String status, final GUI gui) {
+	public FindPlayers(final MethodProvider ctx, final String status) {
 		super(status);
 		this.ctx = ctx;
-		this.gui = gui;
 	}
 
 	@Override
@@ -46,7 +43,7 @@ public class FindPlayers extends Task {
 
 				// TODO Apply various filters from GUI
 
-				discordService.postMessage(gui.getDiscordUrl(), details);
+				discordService.postMessage(details);
 				Sleep.sleepFor(50); // We get rate limited by the Discord API this gives a little pause in between requests
 			}
 		} else {

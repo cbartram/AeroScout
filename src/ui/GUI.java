@@ -19,6 +19,7 @@ public class GUI extends JDialog {
 	private JTextField equipmentFilterTextBox;
 	private JLabel discordErrorMessage;
 	private boolean started;
+	private final Configuration config = Configuration.getInstance();
 
 	public GUI() {
 		setContentPane(contentPane);
@@ -29,6 +30,19 @@ public class GUI extends JDialog {
 		combatFilterComboBox.addItem("Greater Than");
 		combatFilterComboBox.addItem("Equal To");
 		combatFilterComboBox.addItem("Between");
+
+		// Add loaded properties to fill in GUI fields
+		for (String key : config.getProperties().stringPropertyNames()) {
+			// Mapping between property names and GUI field names
+			switch (key) {
+				case "discord.url":
+					this.discordUrlTextField.setText(config.getProperties().getProperty(key));
+					break;
+				default:
+					System.out.println("[WARN] Unknown property: " + key + ". Field mapping cannot be determined.");
+			}
+		}
+
 
 		buttonOK.addActionListener(e -> {
 			if (!Util.isUrl(discordUrlTextField.getText())) {
@@ -87,6 +101,7 @@ public class GUI extends JDialog {
 	 * Closes the GUI
 	 */
 	public void close() {
+		config.save(this);
 		setVisible(false);
 		dispose();
 	}
@@ -152,11 +167,18 @@ public class GUI extends JDialog {
 		final JLabel label4 = new JLabel();
 		label4.setText("Equipment Filter");
 		panel3.add(label4, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JPanel panel4 = new JPanel();
+		panel4.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+		panel3.add(panel4, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		discordErrorMessage = new JLabel();
 		discordErrorMessage.setEnabled(true);
 		discordErrorMessage.setText("DiscordErrorMessage");
 		discordErrorMessage.setVisible(false);
-		panel3.add(discordErrorMessage, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel4.add(discordErrorMessage, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
+		panel4.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		final com.intellij.uiDesigner.core.Spacer spacer3 = new com.intellij.uiDesigner.core.Spacer();
+		panel4.add(spacer3, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 	}
 
 	/**

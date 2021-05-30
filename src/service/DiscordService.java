@@ -2,6 +2,7 @@ package service;
 
 import model.PlayerDetails;
 import org.osbot.rs07.api.ui.EquipmentSlot;
+import ui.Configuration;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -19,11 +20,11 @@ public class DiscordService {
 	/**
 	 * Uses an Http POST request to relay player details to a discord server given the unique URL of the discord
 	 * webhook.
-	 * @param  discordUrl String the discord webhook URL to post messages to.
 	 * @param playerDetails PlayerDetails A player details instance containing information about player levels,
 	 *                      gear, combat, and skull status.
 	 */
-	public void postMessage(final String discordUrl, final PlayerDetails playerDetails) {
+	public void postMessage(final PlayerDetails playerDetails) {
+		final String discordUrl = Configuration.getInstance().get("discord.url");
 		final String formattedPlayerDetails = String.format("W-%d --- %s (%d) --- Skull: %d --- Lvls A: %d D: %d S: %d H: %d R: %d M: %d P: %s --- Gear Head: %s Neck: %s Cape: %s Weapon: %s Chest: %s Shield: %s Legs: %s Gloves: %s Boots: %s ",
 				playerDetails.getWorld(),
 				playerDetails.getName(),
@@ -73,6 +74,7 @@ public class DiscordService {
 				response.append(output);
 			}
 
+			System.out.println("Response: " + response);
 			in.close();
 		} catch(IOException e) {
 			e.printStackTrace();

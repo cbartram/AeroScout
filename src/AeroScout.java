@@ -19,12 +19,6 @@ import java.util.List;
 		version=1
 )
 public class AeroScout extends Script {
-
-	public static void main(String[] args) {
-		GUI gui = new GUI();
-		gui.open();
-	}
-
 	private static final List<Task> tasks = new ArrayList<>();
 	private static final GUI gui = new GUI();
 	private String status = "Initializing Script";
@@ -36,7 +30,7 @@ public class AeroScout extends Script {
 
 		// Add all our tasks to the task list
 		tasks.addAll(Collections.singletonList(
-			new FindPlayers(this, "Locating Nearby Players...", gui)
+			new FindPlayers(this, "Locating Nearby Players...")
 		));
 
 		try {
@@ -46,12 +40,6 @@ public class AeroScout extends Script {
 			});
 		} catch (InterruptedException | InvocationTargetException e) {
 			e.printStackTrace();
-			stop();
-		}
-
-		// Stop the script if the user never clicked the start button
-		// but closed the GUI
-		if (!gui.isStarted()) {
 			stop();
 		}
 	}
