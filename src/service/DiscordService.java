@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * DiscordService - Contains methods used to interface with the Discord HTTP API. This service is primarily respondible
@@ -47,8 +48,8 @@ public class DiscordService {
 				playerDetails.getEquipment().getOrDefault(EquipmentSlot.HANDS, "None"),
 				playerDetails.getEquipment().getOrDefault(EquipmentSlot.FEET, "None")
 		);
-		final String jsonPayload = "{ \"content\": \"" + formattedPlayerDetails + "\"}";
 		try {
+			final String jsonPayload = "{ \"content\": \"" + URLEncoder.encode(formattedPlayerDetails, "UTF-8") + "\"}";
 			HttpURLConnection con = (HttpURLConnection) new URL(discordUrl).openConnection();
 			con.setDoOutput(true);
 			con.setDoInput(true);
@@ -74,9 +75,10 @@ public class DiscordService {
 				response.append(output);
 			}
 
-			System.out.println("Response: " + response);
+			System.out.println("[INFO] Http Response: " + response);
 			in.close();
 		} catch(IOException e) {
+			System.err.println("[ERROR] IOException thrown while attempting to contact Discord Webhook URL. Message = " + e.getMessage() + " Player Details = " + playerDetails);
 			e.printStackTrace();
 		}
 	}

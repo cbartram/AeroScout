@@ -20,19 +20,18 @@ import java.util.List;
 )
 public class AeroScout extends Script {
 	private static final List<Task> tasks = new ArrayList<>();
-	private static final GUI gui = new GUI();
+	private static final GUI gui = GUI.getInstance();
 	private String status = "Initializing Script";
 	private long startTime;
+
+	public static void main(String[] args) {
+		gui.pack();
+		gui.setVisible(true);
+	}
 
 	@Override
 	public final void onStart() {
 		startTime = System.currentTimeMillis();
-
-		// Add all our tasks to the task list
-		tasks.addAll(Collections.singletonList(
-			new FindPlayers(this, "Locating Nearby Players...")
-		));
-
 		try {
 			SwingUtilities.invokeAndWait(() -> {
 				gui.open();
@@ -42,6 +41,12 @@ public class AeroScout extends Script {
 			e.printStackTrace();
 			stop();
 		}
+
+		// Add all our tasks to the task list
+		tasks.addAll(Collections.singletonList(
+			new FindPlayers(this, "Locating Nearby Players...")
+		));
+
 	}
 
 	@Override

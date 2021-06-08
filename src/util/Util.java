@@ -93,17 +93,6 @@ public class Util {
 		playerStatsCache.put(playerName, stats);
 		return stats;
 	}
-
-	/**
-	 * Simple method to validate that the URL is a valid discord webhook URL and not something potentially malicious.
-	 * @param url String the URL to validate.
-	 * @return Boolean true if the URL is a valid discord webhook URL and false otherwise
-	 */
-	public static boolean isUrl(final String url) {
-		final String validUrlHost = "https://discord.com/api/webhooks/";
-		if(url.length() == 0 || url.length() < validUrlHost.length()) return false;
-		return url.startsWith(validUrlHost);
-	}
 	
 
 	/**

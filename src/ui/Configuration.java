@@ -78,7 +78,12 @@ public class Configuration {
 		try {
 			System.out.println("[INFO] Saving Configuration file to: " + FILE_PATH);
 			OutputStream stream = new FileOutputStream(FILE_PATH);
-			this.properties.setProperty("discord.url", gui.getDiscordUrl());
+			this.properties.setProperty("discord.url", gui.getDiscordUrlTextField().getText());
+			this.properties.setProperty("filter.combat.symbol", (String) gui.getCombatFilterComboBox().getSelectedItem());
+			this.properties.setProperty("filter.combat.text.simple", gui.getCombatFilterTextField().getText());
+			this.properties.setProperty("filter.combat.text.between", gui.getCombatFilterBetweenTextField().getText());
+//			this.properties.setProperty("filter.item", gui.getCombatFilterValue());
+//			this.properties.setProperty("filter.equipment", gui.getCombatFilterValue());
 			this.properties.store(stream, "");
 		} catch (IOException e) {
 			System.err.println("[ERROR] IOException thrown while attempting to write configuration properties to: " + FILE_PATH);
