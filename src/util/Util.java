@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -27,6 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Util {
 
 	private static final Map<String, Map<String, Stat>> playerStatsCache = new ConcurrentHashMap<>();
+	private static final Map<String, Integer> validDenominations = new HashMap<>();
+
+	// TODO Perhaps these would be better suited an an enum?
+	static {
+		validDenominations.put("K", 1000);
+		validDenominations.put("M", 1000000);
+		validDenominations.put("B", 1000000000);
+	}
 
 	/**
 	 * Retrieves the current price of a Grand Exchange tradeable item given its ID.
@@ -92,6 +101,32 @@ public class Util {
 		}
 		playerStatsCache.put(playerName, stats);
 		return stats;
+	}
+
+	/**
+	 * Converts a string value like 100M, 10k, 50B, or 1000 to its appropriate integer value. i.e 10k would be
+	 * converted into 10,000 (without the comma).
+	 * @param rawValue String the raw value which includes or does not include a denomination
+	 * @return Integer the integer value represented by the denomination
+	 */
+	public int parseDenominatedGold(final String rawValue) {
+		if(rawValue.length() == 0 || rawValue.length() == 1) return 0;
+		// Check the last char for M, B or K
+		final String denomination = rawValue.substring(rawValue.length() - 1);
+		int value;
+		try {
+			if (validDenominations.containsKey(denomination.toUpperCase(Locale.ROOT))) {
+				// Multiply the parsed integer with the denomination
+				value = Integer.parseInt(rawValue.substring(0, rawValue.length() - 1)) * validDenominations.get(denomination.toUpperCase(Locale.ROOT));
+			} else {
+				// There is no denomination assume the parsed integer is the value itself
+				value = Integer.parseInt(rawValue);
+			}
+			return value;
+		} catch(NumberFormatException e) {
+			System.err.println("NumberFormatException thrown while attempting to parse value " + rawValue + " from item value filter.");
+			return 0;
+		}
 	}
 	
 

@@ -5,7 +5,7 @@ import model.Symbol;
 import model.validation.CombatFilterValidator;
 import model.validation.DiscordUrlValidator;
 import model.validation.Validation;
-import org.osbot.S;
+import model.validation.ValueFilterValidator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,12 +25,13 @@ public class GUI extends JDialog {
 	private JPanel contentPane;
 	private JButton buttonOK;
 	private JButton buttonCancel;
-	private JTextField itemValueFilter;
 	private JTextField equipmentFilterTextField;
 	private JScrollPane equipmentFilterScrollPane;
 	private JButton addEquipmentButton;
-	private JList<String> equipmentFilterList; // populated by the default list model
+	private JLabel itemValueLabelTip;
 	private DefaultListModel<String> equipmentList = new DefaultListModel<>();
+	// populated by the default list model + custom accessor method bc logic is slightly more complex
+	private JList<String> equipmentFilterList;
 
 	@Getter
 	private JTextField discordUrlTextField;
@@ -43,6 +44,9 @@ public class GUI extends JDialog {
 
 	@Getter
 	private JComboBox<String> combatFilterComboBox;
+
+	@Getter
+	private JTextField itemValueFilterTextField;
 
 	// Grabbing the configuration instance will automatically attempt to load any AeroScout.properties files
 	private final Configuration config = Configuration.getInstance();
@@ -70,7 +74,8 @@ public class GUI extends JDialog {
 				// Initialize the validations which will need to be applied to the GUI fields
 				validations.addAll(Arrays.asList(
 						new CombatFilterValidator(),
-						new DiscordUrlValidator()
+						new DiscordUrlValidator(),
+						new ValueFilterValidator()
 				));
 			}
 		}
@@ -111,6 +116,14 @@ public class GUI extends JDialog {
 					break;
 				case "filter.combat.text.between":
 					this.combatFilterBetweenTextField.setText(value);
+					break;
+				case "filter.item":
+					this.itemValueFilterTextField.setText(value);
+					break;
+				case "filter.equipment":
+					for (String item : value.split(",")) {
+						equipmentList.addElement(item);
+					}
 					break;
 				default:
 					System.out.println("[WARN] Unknown property: " + key + ". Field mapping cannot be determined.");
@@ -215,7 +228,7 @@ public class GUI extends JDialog {
 		contentPane = new JPanel();
 		contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 3, 3));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(6, 6, new Insets(0, 0, 0, 0), -1, -1));
+		panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(7, 6, new Insets(0, 0, 0, 0), -1, -1));
 		contentPane.add(panel1);
 		final JLabel label1 = new JLabel();
 		label1.setText("Discord URL");
@@ -233,33 +246,31 @@ public class GUI extends JDialog {
 		label3.setText("Item Value Filter");
 		label3.setToolTipText("Scout for players wearing equipment of at least a value specified here.");
 		panel1.add(label3, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		itemValueFilter = new JTextField();
-		panel1.add(itemValueFilter, new com.intellij.uiDesigner.core.GridConstraints(2, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-		final JLabel label4 = new JLabel();
-		label4.setText("Equipment Filter");
-		label4.setToolTipText("Scout for players with specific equipment listed here.");
-		panel1.add(label4, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 2, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		itemValueFilterTextField = new JTextField();
+		panel1.add(itemValueFilterTextField, new com.intellij.uiDesigner.core.GridConstraints(2, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		equipmentFilterScrollPane = new JScrollPane();
 		equipmentFilterScrollPane.setVerticalScrollBarPolicy(22);
-		panel1.add(equipmentFilterScrollPane, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		panel1.add(equipmentFilterScrollPane, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final DefaultListModel defaultListModel1 = new DefaultListModel();
+		equipmentFilterList.setModel(defaultListModel1);
 		equipmentFilterScrollPane.setViewportView(equipmentFilterList);
 		equipmentFilterTextField = new JTextField();
 		panel1.add(equipmentFilterTextField, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		addEquipmentButton = new JButton();
 		addEquipmentButton.setText("Add");
-		panel1.add(addEquipmentButton, new com.intellij.uiDesigner.core.GridConstraints(4, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(addEquipmentButton, new com.intellij.uiDesigner.core.GridConstraints(4, 2, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		combatFilterTextField = new JTextField();
 		combatFilterTextField.setText("");
 		panel1.add(combatFilterTextField, new com.intellij.uiDesigner.core.GridConstraints(1, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		combatFilterBetweenTextField = new JTextField();
 		combatFilterBetweenTextField.setEnabled(false);
 		panel1.add(combatFilterBetweenTextField, new com.intellij.uiDesigner.core.GridConstraints(1, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, 30), null, 0, false));
-		final JLabel label5 = new JLabel();
-		label5.setText("And");
-		panel1.add(label5, new com.intellij.uiDesigner.core.GridConstraints(1, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label4 = new JLabel();
+		label4.setText("And");
+		panel1.add(label4, new com.intellij.uiDesigner.core.GridConstraints(1, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel panel2 = new JPanel();
 		panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-		panel1.add(panel2, new com.intellij.uiDesigner.core.GridConstraints(5, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, new Dimension(161, 38), null, 0, false));
+		panel1.add(panel2, new com.intellij.uiDesigner.core.GridConstraints(6, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, new Dimension(161, 38), null, 0, false));
 		final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
 		panel2.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JPanel panel3 = new JPanel();
@@ -271,6 +282,15 @@ public class GUI extends JDialog {
 		buttonOK = new JButton();
 		buttonOK.setText("OK");
 		panel3.add(buttonOK, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		itemValueLabelTip = new JLabel();
+		itemValueLabelTip.setText("(tip: You can add K,M, or B to the end for GP denominations)");
+		panel1.add(itemValueLabelTip, new com.intellij.uiDesigner.core.GridConstraints(2, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
+		panel1.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JLabel label5 = new JLabel();
+		label5.setText("Equipment Filter");
+		label5.setToolTipText("Scout for players with specific equipment listed here.");
+		panel1.add(label5, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JSeparator separator1 = new JSeparator();
 		contentPane.add(separator1);
 	}
@@ -284,5 +304,13 @@ public class GUI extends JDialog {
 
 	private void createUIComponents() {
 		equipmentFilterList = new JList<>(equipmentList);
+	}
+
+	public List<String> getEquipmentFilterList() {
+		List<String> tempList = new ArrayList<>();
+		for (int i = 0; i < equipmentFilterList.getModel().getSize(); i++) {
+			tempList.add(equipmentFilterList.getModel().getElementAt(i));
+		}
+		return tempList;
 	}
 }

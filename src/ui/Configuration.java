@@ -82,8 +82,8 @@ public class Configuration {
 			this.properties.setProperty("filter.combat.symbol", (String) gui.getCombatFilterComboBox().getSelectedItem());
 			this.properties.setProperty("filter.combat.text.simple", gui.getCombatFilterTextField().getText());
 			this.properties.setProperty("filter.combat.text.between", gui.getCombatFilterBetweenTextField().getText());
-//			this.properties.setProperty("filter.item", gui.getCombatFilterValue());
-//			this.properties.setProperty("filter.equipment", gui.getCombatFilterValue());
+			this.properties.setProperty("filter.item", gui.getItemValueFilterTextField().getText());
+			this.properties.setProperty("filter.equipment", String.join(",", gui.getEquipmentFilterList()));
 			this.properties.store(stream, "");
 		} catch (IOException e) {
 			System.err.println("[ERROR] IOException thrown while attempting to write configuration properties to: " + FILE_PATH);
