@@ -87,9 +87,6 @@ public class GUI extends JDialog {
 		setContentPane(contentPane);
 		setModal(true);
 		getRootPane().setDefaultButton(buttonOK);
-		equipmentFilterList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		equipmentFilterList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		equipmentFilterList.setVisibleRowCount(-1);
 
 		combatFilterComboBox.addItem(Symbol.LESS_THAN.getText());
 		combatFilterComboBox.addItem(Symbol.GREATER_THAN.getText());
@@ -155,8 +152,10 @@ public class GUI extends JDialog {
 			}
 		});
 		addEquipmentButton.addActionListener(e -> {
-			equipmentList.addElement(equipmentFilterTextField.getText());
-			equipmentFilterTextField.setText("");
+			if (equipmentFilterTextField.getText().length() > 0) {
+				equipmentList.addElement(equipmentFilterTextField.getText());
+				equipmentFilterTextField.setText("");
+			}
 		});
 
 		// call onCancel() when cross is clicked
@@ -169,6 +168,9 @@ public class GUI extends JDialog {
 
 		// call onCancel() on ESCAPE
 		contentPane.registerKeyboardAction(e -> close(false), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		contentPane.registerKeyboardAction(e -> {
+			((DefaultListModel) equipmentFilterList.getModel()).remove(equipmentFilterList.getSelectedIndex());
+		}, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 	}
 
 	/**
@@ -251,8 +253,8 @@ public class GUI extends JDialog {
 		equipmentFilterScrollPane = new JScrollPane();
 		equipmentFilterScrollPane.setVerticalScrollBarPolicy(22);
 		panel1.add(equipmentFilterScrollPane, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-		final DefaultListModel defaultListModel1 = new DefaultListModel();
-		equipmentFilterList.setModel(defaultListModel1);
+		equipmentFilterList.setLayoutOrientation(1);
+		equipmentFilterList.setSelectionMode(0);
 		equipmentFilterScrollPane.setViewportView(equipmentFilterList);
 		equipmentFilterTextField = new JTextField();
 		panel1.add(equipmentFilterTextField, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -304,6 +306,9 @@ public class GUI extends JDialog {
 
 	private void createUIComponents() {
 		equipmentFilterList = new JList<>(equipmentList);
+		equipmentFilterList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		equipmentFilterList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		equipmentFilterList.setVisibleRowCount(-1);
 	}
 
 	public List<String> getEquipmentFilterList() {
@@ -311,6 +316,7 @@ public class GUI extends JDialog {
 		for (int i = 0; i < equipmentFilterList.getModel().getSize(); i++) {
 			tempList.add(equipmentFilterList.getModel().getElementAt(i));
 		}
+		System.out.println("Temp list to persisted to disk: " + tempList);
 		return tempList;
 	}
 }

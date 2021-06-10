@@ -71,10 +71,11 @@
             </properties>
             <border type="none"/>
             <children>
-              <component id="85a6f" class="javax.swing.JList" binding="equipmentFilterList" custom-create="true">
+              <component id="18e51" class="javax.swing.JList" binding="equipmentFilterList" custom-create="true">
                 <constraints/>
                 <properties>
-                  <model/>
+                  <layoutOrientation value="1"/>
+                  <selectionMode value="0"/>
                 </properties>
               </component>
             </children>
