@@ -1,6 +1,7 @@
 package ui;
 
 import lombok.Getter;
+import model.Configuration;
 import model.Symbol;
 import model.validation.CombatFilterValidator;
 import model.validation.DiscordUrlValidator;
@@ -166,7 +167,6 @@ public class GUI extends JDialog {
 			}
 		});
 
-		// call onCancel() on ESCAPE
 		contentPane.registerKeyboardAction(e -> close(false), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		contentPane.registerKeyboardAction(e -> {
 			((DefaultListModel) equipmentFilterList.getModel()).remove(equipmentFilterList.getSelectedIndex());
@@ -316,7 +316,6 @@ public class GUI extends JDialog {
 		for (int i = 0; i < equipmentFilterList.getModel().getSize(); i++) {
 			tempList.add(equipmentFilterList.getModel().getElementAt(i));
 		}
-		System.out.println("Temp list to persisted to disk: " + tempList);
 		return tempList;
 	}
 }

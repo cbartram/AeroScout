@@ -2,7 +2,7 @@ package service;
 
 import model.PlayerDetails;
 import org.osbot.rs07.api.ui.EquipmentSlot;
-import ui.Configuration;
+import model.Configuration;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -26,7 +26,7 @@ public class DiscordService {
 	 */
 	public void postMessage(final PlayerDetails playerDetails) {
 		final String discordUrl = Configuration.getInstance().get("discord.url");
-		final String formattedPlayerDetails = String.format("W-%d --- %s (%d) --- Skull: %d --- Lvls A: %d D: %d S: %d H: %d R: %d M: %d P: %s --- Gear Head: %s Neck: %s Cape: %s Weapon: %s Chest: %s Shield: %s Legs: %s Gloves: %s Boots: %s ",
+		final String formattedPlayerDetails = String.format("W-%d --- %s (%d) --- Skull: %d --- Lvls Attack: %d Defence: %d Strength: %d Hitpoints: %d Range: %d Magic: %d Prayer: %s --- Gear Head: %s Neck: %s Cape: %s Weapon: %s Chest: %s Shield: %s Legs: %s Gloves: %s Boots: %s ",
 				playerDetails.getWorld(),
 				playerDetails.getName(),
 				playerDetails.getCombatLevel(),
@@ -69,7 +69,7 @@ public class DiscordService {
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String output;
-			StringBuffer response = new StringBuffer();
+			StringBuilder response = new StringBuilder();
 
 			while ((output = in.readLine()) != null) {
 				response.append(output);

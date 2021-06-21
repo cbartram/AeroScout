@@ -1,8 +1,13 @@
-package ui;
+package model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import model.filter.CombatLevelFilter;
+import model.filter.ItemValueFilter;
+import model.filter.PlayerFilter;
+import ui.GUI;
+import util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,22 +15,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Configuration {
+public class Configuration implements Serializable {
 
 	private static final String FILE_PATH = System.getProperty("user.home")
 			+ File.separator + "OSBot" + File.separator + "Data"
 			+ File.separator + "AeroScout.properties";
-
-
 	private static volatile Configuration instance;
 	private static final Object mutex = new Object();
 
 	@Getter
 	private final Properties properties = new Properties();
 
+	@Getter
+	private List<PlayerFilter> filters = new ArrayList<>();
 
 	/**
 	 * Configuration is implemented as a singleton instance which cannot be instantiated directly. This ensures all
@@ -52,6 +61,9 @@ public class Configuration {
 		return result;
 	}
 
+	// TODO Extend this classes functionality to return configuration the with defined logic. i.e get("filter.equipment") should
+	// return a List<Equipment> class where the equipment has a getValue() method which returns the GE value
+	// and get("filter.item") returns a int value of 150,000 even though the value saved to disk may be 150k
 	public String get(final String key) {
 		return this.properties.containsKey(key) ? this.properties.getProperty(key) : "No property for key: " + key;
 	}
@@ -85,6 +97,27 @@ public class Configuration {
 			this.properties.setProperty("filter.item", gui.getItemValueFilterTextField().getText());
 			this.properties.setProperty("filter.equipment", String.join(",", gui.getEquipmentFilterList()));
 			this.properties.store(stream, "");
+
+			final CombatLevelFilter combatLevelFilter;
+
+			if (Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()) == Symbol.BETWEEN) {
+				combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
+						Integer.parseInt(gui.getCombatFilterTextField().getText()),
+						Integer.parseInt(gui.getCombatFilterBetweenTextField().getText()));
+			} else {
+				combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
+						Integer.parseInt(gui.getCombatFilterTextField().getText()));
+			}
+
+
+			// Initialize filters
+			filters.addAll(Arrays.asList(
+				combatLevelFilter,
+			 	new ItemValueFilter(Util.parseDenominatedGold(gui.getItemValueFilterTextField().getText()))
+					// new EquipmentFilter(...)
+			));
+
+
 		} catch (IOException e) {
 			System.err.println("[ERROR] IOException thrown while attempting to write configuration properties to: " + FILE_PATH);
 			e.printStackTrace();

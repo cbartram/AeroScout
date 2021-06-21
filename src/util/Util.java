@@ -1,5 +1,7 @@
 package util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import model.Stat;
 import org.osbot.rs07.api.ui.Skill;
 
@@ -13,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +30,9 @@ public class Util {
 
 	private static final Map<String, Map<String, Stat>> playerStatsCache = new ConcurrentHashMap<>();
 	private static final Map<String, Integer> validDenominations = new HashMap<>();
+	private static final ObjectMapper mapper = new ObjectMapper();
+	private static final Map<String, Integer> itemPriceMap = new HashMap<>();
+
 
 	// TODO Perhaps these would be better suited an an enum?
 	static {
@@ -37,35 +41,56 @@ public class Util {
 		validDenominations.put("B", 1000000000);
 	}
 
-	/**
-	 * Retrieves the current price of a Grand Exchange tradeable item given its ID.
-	 * @param id Integer the id of the item to lookup
-	 * @return Optional representing the id and null if it could notbe found
-	 */
-	public static Optional<Integer> getPrice(int id){
-		Optional<Integer> price = Optional.empty();
+	public static int getPrice(final String itemId) {
+		if(itemPriceMap.containsKey(itemId)) {
+			return itemPriceMap.get(itemId);
+		}
+		return 0;
+	}
 
+	public static Map<String, Integer> cacheItemPrices() {
+		Map<String, Integer> itemPriceMap = new HashMap<>();
 		try {
-			URL url = new URL("http://services.runescape.com/m=itemdb_oldschool/Cowhide/viewitem?obj=" + id);
+			URL url = new URL("https://prices.runescape.wiki/api/v1/osrs/latest");
 			URLConnection con = url.openConnection();
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
 			con.setUseCaches(true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String data;
-			while ((data = br.readLine()) != null) {
-				if(data.contains("Current Guide Price")) {
-					int firstIndex = data.indexOf("title=\'");
-					int lastIndex = data.lastIndexOf("\'");
-					price = Optional.of(Integer.parseInt(data.substring(firstIndex + 7, lastIndex)));
+			final StringBuilder rawData = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				rawData.append(line);
+			}
+			JsonNode node = mapper.readTree(rawData.toString());
+			JsonNode parsedData = node.get("data");
+			Map<String, Map<String, Integer>> data = mapper.treeToValue(parsedData, Map.class);
+			for(String itemId : data.keySet()) {
+				// Compute avg value of high and low price if they exist otherwise just take one or the other.
+				Integer high = data.get(itemId).get("high");
+				Integer low = data.get(itemId).get("low");
+				if(high == null && low == null)  {
+					continue;
 				}
+
+				if(high == null) {
+					itemPriceMap.put(itemId, low);
+					continue;
+				}
+				if(low == null) {
+					itemPriceMap.put(itemId, high);
+					continue;
+				}
+
+				int average = (high + low) / 2;
+				itemPriceMap.put(itemId, average);
 			}
 			br.close();
-		} catch(Exception e){
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return price;
+		System.out.println(itemPriceMap);
+		return itemPriceMap;
 	}
-
 
 	public static Map<String, Stat> getStats(final String playerName) {
 
@@ -109,7 +134,7 @@ public class Util {
 	 * @param rawValue String the raw value which includes or does not include a denomination
 	 * @return Integer the integer value represented by the denomination
 	 */
-	public int parseDenominatedGold(final String rawValue) {
+	public static int parseDenominatedGold(final String rawValue) {
 		if(rawValue.length() == 0 || rawValue.length() == 1) return 0;
 		// Check the last char for M, B or K
 		final String denomination = rawValue.substring(rawValue.length() - 1);

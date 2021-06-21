@@ -25,6 +25,7 @@ public class AeroScout extends Script {
 	private long startTime;
 
 	public static void main(String[] args) {
+		Util.cacheItemPrices();
 		gui.pack();
 		gui.setVisible(true);
 	}
@@ -32,6 +33,7 @@ public class AeroScout extends Script {
 	@Override
 	public final void onStart() {
 		startTime = System.currentTimeMillis();
+		Util.cacheItemPrices();
 		try {
 			SwingUtilities.invokeAndWait(() -> {
 				gui.open();
