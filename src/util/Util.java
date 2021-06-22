@@ -33,8 +33,6 @@ public class Util {
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private static final Map<String, Integer> itemPriceMap = new HashMap<>();
 
-
-	// TODO Perhaps these would be better suited an an enum?
 	static {
 		validDenominations.put("K", 1000);
 		validDenominations.put("M", 1000000);
@@ -42,14 +40,10 @@ public class Util {
 	}
 
 	public static int getPrice(final String itemId) {
-		if(itemPriceMap.containsKey(itemId)) {
-			return itemPriceMap.get(itemId);
-		}
-		return 0;
+		return itemPriceMap.getOrDefault(itemId, 0);
 	}
 
 	public static Map<String, Integer> cacheItemPrices() {
-		Map<String, Integer> itemPriceMap = new HashMap<>();
 		try {
 			URL url = new URL("https://prices.runescape.wiki/api/v1/osrs/latest");
 			URLConnection con = url.openConnection();
@@ -88,7 +82,6 @@ public class Util {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(itemPriceMap);
 		return itemPriceMap;
 	}
 

@@ -16,19 +16,7 @@ public class ItemValueFilter implements PlayerFilter {
 
 	@Override
 	public List<Player> doFilter(List<Player> players) {
-		for(Player player : players) {
-			int totalValue = 0;
-			int[] equipment = player.getDefinition().getAppearance();
-			for (int j : equipment) {
-				int itemId = j - 512;
-				if (itemId > 0) {
-					System.out.println("Player " + player.getName() + " is wearing Item id: " + itemId + " which is worth: " + Util.getPrice(String.valueOf(itemId)));
-					totalValue += Util.getPrice(String.valueOf(itemId));
-				}
-			}
-
-			System.out.println("Total value for player: " + player.getName() + "'s equipment is: " + totalValue);
-		}
+		System.out.println("Minimum value threshold: " + minValueThreshold);
 		return players.stream()
 				.filter(player -> this.equipmentValueFor(player) >= minValueThreshold)
 				.collect(Collectors.toList());

@@ -98,15 +98,17 @@ public class Configuration implements Serializable {
 			this.properties.setProperty("filter.equipment", String.join(",", gui.getEquipmentFilterList()));
 			this.properties.store(stream, "");
 
-			final CombatLevelFilter combatLevelFilter;
+			CombatLevelFilter combatLevelFilter = new CombatLevelFilter(Symbol.GREATER_THAN, 3);
 
-			if (Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()) == Symbol.BETWEEN) {
-				combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
-						Integer.parseInt(gui.getCombatFilterTextField().getText()),
-						Integer.parseInt(gui.getCombatFilterBetweenTextField().getText()));
-			} else {
-				combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
-						Integer.parseInt(gui.getCombatFilterTextField().getText()));
+			if(gui.getCombatFilterTextField().getText().length() > 0) {
+				if (Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()) == Symbol.BETWEEN) {
+					combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
+							Integer.parseInt(gui.getCombatFilterTextField().getText()),
+							Integer.parseInt(gui.getCombatFilterBetweenTextField().getText()));
+				} else {
+					combatLevelFilter = new CombatLevelFilter(Symbol.of((String) gui.getCombatFilterComboBox().getSelectedItem()),
+							Integer.parseInt(gui.getCombatFilterTextField().getText()));
+				}
 			}
 
 

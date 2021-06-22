@@ -1,8 +1,8 @@
 package service;
 
+import model.Configuration;
 import model.PlayerDetails;
 import org.osbot.rs07.api.ui.EquipmentSlot;
-import model.Configuration;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 /**
  * DiscordService - Contains methods used to interface with the Discord HTTP API. This service is primarily respondible
@@ -49,7 +48,8 @@ public class DiscordService {
 				playerDetails.getEquipment().getOrDefault(EquipmentSlot.FEET, "None")
 		);
 		try {
-			final String jsonPayload = "{ \"content\": \"" + URLEncoder.encode(formattedPlayerDetails, "UTF-8") + "\"}";
+			final String jsonPayload = "{ \"content\": \"" + formattedPlayerDetails + "\"}";
+//			final String jsonPayload = "{ \"content\": \"" + URLEncoder.encode(formattedPlayerDetails, "UTF-8") + "\"}";
 			HttpURLConnection con = (HttpURLConnection) new URL(discordUrl).openConnection();
 			con.setDoOutput(true);
 			con.setDoInput(true);
