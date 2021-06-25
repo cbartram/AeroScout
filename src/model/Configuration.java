@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import model.filter.CombatLevelFilter;
+import model.filter.EquipmentFilter;
 import model.filter.ItemValueFilter;
 import model.filter.PlayerFilter;
 import ui.GUI;
@@ -61,9 +62,6 @@ public class Configuration implements Serializable {
 		return result;
 	}
 
-	// TODO Extend this classes functionality to return configuration the with defined logic. i.e get("filter.equipment") should
-	// return a List<Equipment> class where the equipment has a getValue() method which returns the GE value
-	// and get("filter.item") returns a int value of 150,000 even though the value saved to disk may be 150k
 	public String get(final String key) {
 		return this.properties.containsKey(key) ? this.properties.getProperty(key) : "No property for key: " + key;
 	}
@@ -111,15 +109,12 @@ public class Configuration implements Serializable {
 				}
 			}
 
-
 			// Initialize filters
 			filters.addAll(Arrays.asList(
 				combatLevelFilter,
-			 	new ItemValueFilter(Util.parseDenominatedGold(gui.getItemValueFilterTextField().getText()))
-					// new EquipmentFilter(...)
+			 	new ItemValueFilter(Util.parseDenominatedGold(gui.getItemValueFilterTextField().getText())),
+				new EquipmentFilter(gui.getEquipmentFilterList())
 			));
-
-
 		} catch (IOException e) {
 			System.err.println("[ERROR] IOException thrown while attempting to write configuration properties to: " + FILE_PATH);
 			e.printStackTrace();

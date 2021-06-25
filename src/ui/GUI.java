@@ -16,6 +16,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -48,6 +49,8 @@ public class GUI extends JDialog {
 
 	@Getter
 	private JTextField itemValueFilterTextField;
+	private JCheckBox membersCheckbox;
+	private JCheckBox pvpWorlds;
 
 	// Grabbing the configuration instance will automatically attempt to load any AeroScout.properties files
 	private final Configuration config = Configuration.getInstance();
@@ -293,6 +296,16 @@ public class GUI extends JDialog {
 		label5.setText("Equipment Filter");
 		label5.setToolTipText("Scout for players with specific equipment listed here.");
 		panel1.add(label5, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label6 = new JLabel();
+		label6.setText("World Hopper");
+		label6.setToolTipText("Scout for players with specific equipment listed here.");
+		panel1.add(label6, new com.intellij.uiDesigner.core.GridConstraints(6, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		membersCheckbox = new JCheckBox();
+		membersCheckbox.setText("hop to only members worlds");
+		panel1.add(membersCheckbox, new com.intellij.uiDesigner.core.GridConstraints(6, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		pvpWorlds = new JCheckBox();
+		pvpWorlds.setText("hop to pvp worlds");
+		panel1.add(pvpWorlds, new com.intellij.uiDesigner.core.GridConstraints(6, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JSeparator separator1 = new JSeparator();
 		contentPane.add(separator1);
 	}
@@ -314,7 +327,9 @@ public class GUI extends JDialog {
 	public List<String> getEquipmentFilterList() {
 		List<String> tempList = new ArrayList<>();
 		for (int i = 0; i < equipmentFilterList.getModel().getSize(); i++) {
-			tempList.add(equipmentFilterList.getModel().getElementAt(i));
+			String equipment = equipmentFilterList.getModel().getElementAt(i).trim().replaceAll(" ", "_");
+			if (!equipment.equals("") && equipment.length() > 0)
+				tempList.add(equipmentFilterList.getModel().getElementAt(i).toUpperCase(Locale.ROOT));
 		}
 		return tempList;
 	}

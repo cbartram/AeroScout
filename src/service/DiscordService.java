@@ -25,11 +25,11 @@ public class DiscordService {
 	 */
 	public void postMessage(final PlayerDetails playerDetails) {
 		final String discordUrl = Configuration.getInstance().get("discord.url");
-		final String formattedPlayerDetails = String.format("W-%d --- %s (%d) --- Skull: %d --- Lvls Attack: %d Defence: %d Strength: %d Hitpoints: %d Range: %d Magic: %d Prayer: %s --- Gear Head: %s Neck: %s Cape: %s Weapon: %s Chest: %s Shield: %s Legs: %s Gloves: %s Boots: %s ",
+		final String formattedPlayerDetails = String.format("W-%d --- %s (%d) --- Skulled: %s --- Lvls Attack: %d Defence: %d Strength: %d Hitpoints: %d Range: %d Magic: %d Prayer: %s --- Gear Head: %s Neck: %s Cape: %s Weapon: %s Chest: %s Shield: %s Legs: %s Gloves: %s Boots: %s ",
 				playerDetails.getWorld(),
-				playerDetails.getName(),
+				playerDetails.getName().replaceAll(" ", "_"),
 				playerDetails.getCombatLevel(),
-				playerDetails.getSkull(),
+				playerDetails.getSkull() == -1 ? "No" : "Yes",
 				playerDetails.getAttackLevel(),
 				playerDetails.getDefenseLevel(),
 				playerDetails.getStrengthLevel(),
@@ -49,7 +49,6 @@ public class DiscordService {
 		);
 		try {
 			final String jsonPayload = "{ \"content\": \"" + formattedPlayerDetails + "\"}";
-//			final String jsonPayload = "{ \"content\": \"" + URLEncoder.encode(formattedPlayerDetails, "UTF-8") + "\"}";
 			HttpURLConnection con = (HttpURLConnection) new URL(discordUrl).openConnection();
 			con.setDoOutput(true);
 			con.setDoInput(true);

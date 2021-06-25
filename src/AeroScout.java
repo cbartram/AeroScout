@@ -1,4 +1,5 @@
 import model.Configuration;
+import model.State;
 import model.filter.PlayerFilter;
 import org.osbot.core.api.Wrapper;
 import org.osbot.rs07.Bot;
@@ -11,6 +12,7 @@ import org.osbot.rs07.api.model.Player;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import task.FindPlayers;
+import task.HopWorlds;
 import task.Task;
 import ui.GUI;
 import util.Util;
@@ -19,6 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -240,6 +243,7 @@ public class AeroScout extends Script {
 	@Override
 	public final void onStart() {
 		startTime = System.currentTimeMillis();
+		State.getInstance();
 		Util.cacheItemPrices();
 		try {
 			SwingUtilities.invokeAndWait(() -> {
@@ -252,8 +256,9 @@ public class AeroScout extends Script {
 		}
 
 		// Add all our tasks to the task list
-		tasks.addAll(Collections.singletonList(
-			new FindPlayers(this, "Locating Nearby Players...")
+		tasks.addAll(Arrays.asList(
+			new FindPlayers(this, "Locating Nearby Players..."),
+			new HopWorlds(this, "Hopping worlds...")
 		));
 
 	}
@@ -271,7 +276,6 @@ public class AeroScout extends Script {
 			log("There has been an error!");
 			e.printStackTrace();
 		}
-		stop(false);
 		return random(150, 200);
 	}
 
@@ -298,8 +302,7 @@ public class AeroScout extends Script {
 		g.setFont(g.getFont().deriveFont(12.0f));
 
 		// Draw the main text and space is out bc its blurry
-//		g.drawString("A e r o  S c o u t", 10, 20);
-		g.drawChars(new char[] {'A', 'e', 'r', 'o', 'S', 'c', 'o', 'u', 't'}, 0, 9, 10, 20);
+		g.drawString("A e r o  S c o u t", 10, 20);
 
 		g.setColor(Color.WHITE);
 		g.drawString("S t a t u s: " + status, 10, 40);

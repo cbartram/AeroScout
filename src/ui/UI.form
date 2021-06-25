@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.GUI">
   <grid id="cbd77" binding="contentPane" layout-manager="FlowLayout" hgap="3" vgap="3" flow-align="1">
     <constraints>
-      <xy x="48" y="54" width="931" height="302"/>
+      <xy x="48" y="54" width="984" height="302"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -187,6 +187,31 @@
             <properties>
               <text value="Equipment Filter"/>
               <toolTipText value="Scout for players with specific equipment listed here."/>
+            </properties>
+          </component>
+          <component id="c9ef" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="World Hopper"/>
+              <toolTipText value="Scout for players with specific equipment listed here."/>
+            </properties>
+          </component>
+          <component id="10119" class="javax.swing.JCheckBox" binding="membersCheckbox">
+            <constraints>
+              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="hop to only members worlds"/>
+            </properties>
+          </component>
+          <component id="1cfc4" class="javax.swing.JCheckBox" binding="pvpWorlds">
+            <constraints>
+              <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="hop to pvp worlds"/>
             </properties>
           </component>
         </children>
