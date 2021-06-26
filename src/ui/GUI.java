@@ -7,6 +7,7 @@ import model.validation.CombatFilterValidator;
 import model.validation.DiscordUrlValidator;
 import model.validation.Validation;
 import model.validation.ValueFilterValidator;
+import org.osbot.L;
 
 import javax.swing.*;
 import java.awt.*;
@@ -126,6 +127,12 @@ public class GUI extends JDialog {
 						equipmentList.addElement(item);
 					}
 					break;
+				case "world.hopper.members":
+					this.membersCheckbox.setSelected(Boolean.parseBoolean(value));
+					break;
+				case "world.hopper.pvp":
+					this.pvpWorlds.setSelected(Boolean.parseBoolean(value));
+					break;
 				default:
 					System.out.println("[WARN] Unknown property: " + key + ". Field mapping cannot be determined.");
 			}
@@ -194,7 +201,9 @@ public class GUI extends JDialog {
 		return isVisible();
 	}
 
-
+	/**
+	 * Closes the GUI and persists the configuration properties file to disk.
+	 */
 	public void close() {
 		close(true);
 	}
@@ -210,14 +219,12 @@ public class GUI extends JDialog {
 		dispose();
 	}
 
-	/**
-	 * Returns the selected combat filter symbol. This will be something like:
-	 * "greater than", "less than", "between".
-	 *
-	 * @return String symbol
-	 */
-	public String getCombatFilterSymbol() {
-		return (String) combatFilterComboBox.getSelectedItem();
+	public boolean useMembersWorlds() {
+		return this.membersCheckbox.isSelected();
+	}
+
+	public boolean usePvpWorlds() {
+		return this.pvpWorlds.isSelected();
 	}
 
 

@@ -94,6 +94,8 @@ public class Configuration implements Serializable {
 			this.properties.setProperty("filter.combat.text.between", gui.getCombatFilterBetweenTextField().getText());
 			this.properties.setProperty("filter.item", gui.getItemValueFilterTextField().getText());
 			this.properties.setProperty("filter.equipment", String.join(",", gui.getEquipmentFilterList()));
+			this.properties.setProperty("world.hopper.members", String.valueOf(gui.useMembersWorlds()));
+			this.properties.setProperty("world.hopper.pvp", String.valueOf(gui.usePvpWorlds()));
 			this.properties.store(stream, "");
 
 			CombatLevelFilter combatLevelFilter = new CombatLevelFilter(Symbol.GREATER_THAN, 3);

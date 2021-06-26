@@ -45,7 +45,7 @@ public class FindPlayers implements Task {
 					.filter(player -> !player.getName().equals(ctx.myPlayer().getName()))
 					.collect(Collectors.toList());
 
-			ctx.log("Found " + players.size() + " players.");
+			ctx.log("Found " + players.size() + " players before any filtering.");
 
 			// Apply filters collectively (not independently of the initial player list)
 			// TODO perhaps in the future their should be a GUI radio button which allows users to define how
@@ -53,7 +53,7 @@ public class FindPlayers implements Task {
 			// should each filter be applied to a subset of players returned from the previous filter.
 			for(PlayerFilter filter : configuration.getFilters()) {
 				players = filter.doFilter(players);
-				System.out.println("There are " + players.size() + " players after filter: " + filter.getClass().getName());
+				ctx.log("There are " + players.size() + " players after filter: " + filter.getClass().getName());
 			}
 
 			for(Player player : players) {
@@ -63,10 +63,9 @@ public class FindPlayers implements Task {
 				ctx.log(details);
 				discordService.postMessage(details);
 			}
-
-			state.setState("HOP_WORLDS");
 		} else {
 			this.status = "No players found.";
 		}
+		state.setState("HOP_WORLDS");
 	}
 }
